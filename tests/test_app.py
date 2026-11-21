@@ -60,6 +60,17 @@ class AppTestCase(unittest.TestCase):
         with self.client.get("/static/css/style.css") as response:
             self.assertEqual(response.status_code, 200)
 
+    def test_auth_pages_and_js_served(self) -> None:
+        self.assertEqual(self.client.get("/login").status_code, 200)
+        self.assertEqual(self.client.get("/register").status_code, 200)
+
+        dashboard = self.client.get("/dashboard")
+        self.assertEqual(dashboard.status_code, 302)
+        self.assertTrue(dashboard.headers["Location"].endswith("/login"))
+
+        with self.client.get("/static/js/auth.js") as js_response:
+            self.assertEqual(js_response.status_code, 200)
+
     def test_api_health_returns_json(self) -> None:
         response = self.client.get("/api/health")
         self.assertEqual(response.status_code, 200)

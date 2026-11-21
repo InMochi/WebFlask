@@ -12,8 +12,12 @@
             <a class="brand" href="{{ url_for('web.home') }}">WebFlask</a>
             <nav class="site-nav" aria-label="Navigasi utama">
                 <a href="{{ url_for('web.home') }}">Beranda</a>
-                <a href="#fitur">Fitur</a>
-                <a href="#struktur">Struktur</a>
+                {% if current_user %}
+                <a href="{{ url_for('web.dashboard') }}">Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('web.login_page') }}">Masuk</a>
+                <a href="{{ url_for('web.register_page') }}">Daftar</a>
+                {% endif %}
             </nav>
         </div>
     </header>
@@ -27,5 +31,6 @@
             <p>&copy; 2026 WebFlask. Dibangun dengan Flask &amp; Jinja2.</p>
         </div>
     </footer>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

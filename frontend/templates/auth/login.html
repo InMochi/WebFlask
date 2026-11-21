@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - WebFlask{% endblock %}
+
+{% block content %}
+<section class="section auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <span class="badge">Autentikasi</span>
+            <h1>Masuk ke Akun</h1>
+            <p class="auth-subtitle">Gunakan email dan password yang sudah terdaftar.</p>
+
+            <p class="form-error" role="alert" hidden data-auth-error></p>
+
+            <form
+                class="auth-form"
+                data-auth-form="login"
+                data-endpoint="{{ url_for('auth.login') }}"
+                data-csrf-endpoint="{{ url_for('auth.issue_csrf_token') }}"
+                data-redirect="{{ url_for('web.dashboard') }}"
+            >
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input
+                        class="form-input"
+                        id="login-email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input
+                        class="form-input"
+                        id="login-password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button class="btn btn-primary btn-block" type="submit" data-submit-btn>
+                    Masuk
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                Belum punya akun?
+                <a href="{{ url_for('web.register_page') }}">Daftar di sini</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+{% endblock %}

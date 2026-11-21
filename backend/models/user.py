@@ -12,6 +12,15 @@ class User:
     email: str
     created_at: str | None = None
 
+    @property
+    def masked_email(self) -> str:
+        """Return PII-masked email for safe UI display (e.g., d***@example.com)."""
+        local, _, domain = self.email.partition("@")
+        if not domain:
+            return "***"
+        prefix = local[:1] if local else "*"
+        return f"{prefix}***@{domain}"
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize safe user fields for JSON responses."""
         data: dict[str, Any] = {"id": self.id, "email": self.email}

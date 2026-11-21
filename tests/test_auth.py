@@ -118,6 +118,12 @@ class AuthTestCase(unittest.TestCase):
         self.assertEqual(me.status_code, 200)
         self.assertEqual(me.get_json()["user"]["email"], "dev@example.com")
 
+        dashboard = self.client.get("/dashboard", base_url=HTTPS_BASE)
+        self.assertEqual(dashboard.status_code, 200)
+        self.assertEqual(dashboard.headers.get("Cache-Control"), "no-store")
+        self.assertIn(b"d***@example.com", dashboard.data)
+        self.assertNotIn(b"dev@example.com", dashboard.data)
+
         logout = self.client.post("/api/auth/logout", headers=headers, base_url=HTTPS_BASE)
         self.assertEqual(logout.status_code, 200)
 

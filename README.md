@@ -60,11 +60,17 @@ WebFlask/
 │       └── web_controller.py
 ├── frontend/
 │   ├── static/
-│   │   └── css/
-│   │       └── style.css
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   └── js/
+│   │       └── auth.js
 │   └── templates/
 │       ├── base.html
+│       ├── dashboard.html
 │       ├── index.html
+│       ├── auth/
+│       │   ├── login.html
+│       │   └── register.html
 │       └── errors/
 │           ├── 404.html
 │           └── 500.html
@@ -104,6 +110,9 @@ Tabel SQLite di `instance/app.db` otomatis dibuat saat aplikasi pertama kali dij
 Endpoint yang tersedia di `http://127.0.0.1:5000`:
 
 - Web homepage: `GET /`
+- Halaman login: `GET /login`
+- Halaman daftar: `GET /register`
+- Halaman dashboard (wajib login): `GET /dashboard`
 - API health check: `GET /api/health`
 - Ambil CSRF token: `GET /api/auth/csrf`
 - Register user: `POST /api/auth/register` (header `X-CSRF-Token`, JSON `{"email", "password"}`)

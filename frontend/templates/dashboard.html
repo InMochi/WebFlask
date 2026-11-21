@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - WebFlask{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-card">
+            <span class="badge">Sesi Aktif</span>
+            <h1>Dashboard</h1>
+            <p class="hero-lead">
+                Kamu login sebagai <code>{{ user.masked_email }}</code>
+                (User ID: <code>{{ user.id }}</code>).
+            </p>
+
+            <p class="form-error" role="alert" hidden data-auth-error></p>
+
+            <div class="hero-actions">
+                <a class="btn btn-secondary" href="{{ url_for('web.home') }}">Beranda</a>
+                <button
+                    class="btn btn-primary"
+                    type="button"
+                    data-logout-btn
+                    data-endpoint="{{ url_for('auth.logout') }}"
+                    data-csrf-endpoint="{{ url_for('auth.issue_csrf_token') }}"
+                    data-redirect="{{ url_for('web.login_page') }}"
+                >
+                    Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+{% endblock %}
