@@ -1,10 +1,12 @@
-"""Application entry point."""
+"""Application entry point for local development."""
 
-import os
 from app import create_app
 
 app = create_app()
 
 if __name__ == "__main__":
-    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
-    app.run(host="127.0.0.1", port=5000, debug=debug_mode)
+    app.run(
+        host="127.0.0.1",
+        port=app.config["PORT"],
+        debug=app.config["DEBUG"],
+    )

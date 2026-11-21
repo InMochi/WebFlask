@@ -1,0 +1,27 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment variables & local secrets
+.env
+.env.*
+!.env.example
+
+# Flask instance & build artifacts
+instance/
+build/
+dist/
+*.egg-info/
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

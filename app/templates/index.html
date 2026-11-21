@@ -56,17 +56,27 @@
     <div class="container">
         <h2 class="section-title">Struktur Direktori</h2>
         <pre class="tree-box"><code>WebFlask/
+├── .env.example
+├── .gitignore
+├── README.md
 ├── app.py
+├── config.py
 ├── requirements.txt
-└── app/
-    ├── __init__.py
-    ├── routes.py
-    ├── static/
-    │   └── css/
-    │       └── style.css
-    └── templates/
-        ├── base.html
-        └── index.html</code></pre>
+├── app/
+│   ├── __init__.py
+│   ├── errors.py
+│   ├── routes.py
+│   ├── static/
+│   │   └── css/
+│   │       └── style.css
+│   └── templates/
+│       ├── base.html
+│       ├── index.html
+│       └── errors/
+│           ├── 404.html
+│           └── 500.html
+└── tests/
+    └── test_app.py</code></pre>
     </div>
 </section>
 {% endblock %}

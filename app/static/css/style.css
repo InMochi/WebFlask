@@ -215,6 +215,19 @@ code {
     color: inherit;
 }
 
+.error-section {
+    padding: 6rem 0;
+}
+
+.error-box {
+    max-width: 560px;
+}
+
+.error-box h1 {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    margin-bottom: 0.75rem;
+}
+
 .site-footer {
     background-color: var(--surface);
     border-top: 1px solid var(--border);
