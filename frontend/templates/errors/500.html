@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - WebFlask{% endblock %}
+
+{% block content %}
+<section class="section error-section">
+    <div class="container error-box">
+        <span class="badge">500</span>
+        <h1>Terjadi kesalahan pada server</h1>
+        <p class="hero-lead">
+            Permintaan tidak dapat diproses saat ini. Silakan coba beberapa saat lagi.
+        </p>
+        <a class="btn btn-primary" href="{{ url_for('web.home') }}">Kembali ke Beranda</a>
+    </div>
+</section>
+{% endblock %}

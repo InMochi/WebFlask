@@ -2,7 +2,7 @@
 
 import unittest
 
-from app import create_app
+from backend import create_app
 
 
 class AppTestCase(unittest.TestCase):
@@ -40,6 +40,24 @@ class AppTestCase(unittest.TestCase):
     def test_static_css_served(self) -> None:
         response = self.client.get("/static/css/style.css")
         self.assertEqual(response.status_code, 200)
+
+    def test_api_health_returns_json(self) -> None:
+        response = self.client.get("/api/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.is_json)
+        self.assertEqual(response.get_json(), {"status": "ok", "app": "WebFlask"})
+        self.assertEqual(response.headers.get("Cache-Control"), "no-store")
+
+    def test_api_404_and_405_return_json(self) -> None:
+        not_found = self.client.get("/api/tidak-ada")
+        self.assertEqual(not_found.status_code, 404)
+        self.assertTrue(not_found.is_json)
+        self.assertEqual(not_found.get_json(), {"error": "Resource not found"})
+
+        wrong_method = self.client.post("/api/health")
+        self.assertEqual(wrong_method.status_code, 405)
+        self.assertTrue(wrong_method.is_json)
+        self.assertEqual(wrong_method.get_json(), {"error": "Method not allowed"})
 
 
 if __name__ == "__main__":
