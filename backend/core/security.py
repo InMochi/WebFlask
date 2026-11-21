@@ -1,15 +1,11 @@
-"""Security utilities: CSRF protection, rate limiting, and auth guards."""
+"""Global HTTP security middleware: headers, CSRF protection, and rate limiting."""
 
 from collections import defaultdict, deque
-from functools import wraps
 import hmac
 import secrets
 import threading
 import time
-from typing import Any, Callable
-from flask import Response, current_app, g, jsonify, request, session
-
-from backend.services import auth_service
+from flask import Flask, Response, current_app, jsonify, request, session
 
 STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -45,6 +41,27 @@ class SlidingWindowRateLimiter:
 
 
 rate_limiter = SlidingWindowRateLimiter()
+
+
+def add_security_headers(response: Response) -> Response:
+    """Attach baseline security headers to every HTTP response."""
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "style-src 'self'; "
+        "script-src 'self'; "
+        "img-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if request.path == "/api" or request.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 def get_or_create_csrf_token() -> str:
@@ -98,28 +115,8 @@ def enforce_api_rate_limit() -> tuple[Response, int] | None:
     return None
 
 
-def load_authenticated_user() -> dict[str, Any] | None:
-    """Load the current authenticated user via auth_service."""
-    sid = session.get("sid")
-    if not sid:
-        return None
-
-    user = auth_service.get_authenticated_user(sid)
-    if user is None:
-        session.pop("sid", None)
-        return None
-    return user
-
-
-def login_required(view: Callable[..., Any]) -> Callable[..., Any]:
-    """Require an active server-side session for protected API endpoints."""
-
-    @wraps(view)
-    def wrapped(*args: Any, **kwargs: Any) -> Any:
-        user = load_authenticated_user()
-        if user is None:
-            return jsonify({"error": "Authentication required"}), 401
-        g.current_user = user
-        return view(*args, **kwargs)
-
-    return wrapped
+def register_security_middleware(app: Flask) -> None:
+    """Register global rate-limit, CSRF, and response-header hooks."""
+    app.before_request(enforce_api_rate_limit)
+    app.before_request(enforce_csrf)
+    app.after_request(add_security_headers)

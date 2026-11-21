@@ -1,7 +1,6 @@
 """SQLite repository for server-side session records."""
 
-from typing import Any
-
+from backend.models.user import User
 from backend.repositories.base import execute_write, fetch_one
 
 
@@ -13,9 +12,9 @@ def create_session(session_id: str, user_id: int, expires_at: str) -> None:
     )
 
 
-def find_active_user_by_session_id(session_id: str) -> dict[str, Any] | None:
-    """Return the user owning an unexpired session, or None if invalid/expired."""
-    return fetch_one(
+def find_active_user_by_session_id(session_id: str) -> User | None:
+    """Return the User owning an unexpired session, or None if invalid/expired."""
+    row = fetch_one(
         """
         SELECT u.id, u.email, u.created_at
         FROM sessions s
@@ -24,6 +23,7 @@ def find_active_user_by_session_id(session_id: str) -> dict[str, Any] | None:
         """,
         (session_id,),
     )
+    return User(**row) if row is not None else None
 
 
 def delete_sessions_by_user_id(user_id: int) -> None:

@@ -4,15 +4,18 @@ Starter template aplikasi web berbasis **Flask 3** dengan pemisahan struktur **B
 
 ## Fitur Utama
 
-- **Arsitektur Layered MVC (Controller -> Service -> Repository + Frontend Views)**:
-  - **Controllers (`backend/controllers/`)**: Auto-discovered `*_controller.py` yang mengekspor `bp = Blueprint(...)`, berisi handler HTTP tipis tanpa `try/except` berulang.
-  - **Services (`backend/services/`)**: Menampung business logic, validasi domain, hashing `scrypt`, dan raise `AppError` (`backend/exceptions.py`).
-  - **Repositories (`backend/repositories/`)**: Khusus query SQLite dengan helper bersama di `base.py`.
+- **Arsitektur Terstruktur ala .NET Core**:
+  - **Core (`backend/core/`)**: Middleware dan utilitas global (`errors.py`, `exceptions.py`, `http.py`, `security.py`) yang bebas dari ketergantungan auth.
+  - **Data (`backend/data/`)**: Koneksi SQLite per-request dan `schema.sql`.
+  - **Models (`backend/models/`)**: Entitas `@dataclass` (`User`, `UserCredentials`) dengan method serialisasi aman `.to_dict()`.
+  - **Repositories (`backend/repositories/`)**: Query SQLite dengan helper bersama di `base.py`, mengembalikan object Model.
+  - **Services (`backend/services/`)**: Business logic, validasi domain, hashing `scrypt`, dan raise `AppError`.
+  - **Controllers (`backend/controllers/`)**: Auto-discovered `*_controller.py` yang mengekspor `bp = Blueprint(...)`, dengan decorator `@authorize` opsional per-endpoint (analog `[Authorize]`).
   - **Views (`frontend/`)**: Template Jinja2 (`frontend/templates/`) dan aset statis (`frontend/static/`).
-- **Application Factory**: Terpusat di `backend/__init__.py` dengan registrasi blueprint, error handler, dan security middleware.
+- **Application Factory**: Terpusat di `backend/__init__.py` dengan registrasi DB, blueprint, error handler, dan security middleware.
 - **SQLite Auth & Session Hardening**: Penyimpanan user (`scrypt` password hashing via Werkzeug) dan server-side session table di `instance/app.db`, cookie `__Host-session` (`HttpOnly`, `Secure`, `SameSite=Lax`, expiry 30 menit), proteksi CSRF (`X-CSRF-Token`), serta in-memory rate limiting.
 - **Konfigurasi Environment**: Kelas `DevelopmentConfig`, `TestingConfig`, dan `ProductionConfig` di `config.py`.
-- **Custom Error Pages & JSON Errors**: Handler `404`, `405`, dan `500` di `backend/controllers/error_controller.py` mengembalikan HTML untuk halaman web dan JSON untuk `/api/*` tanpa membocorkan stack trace.
+- **Custom Error Pages & JSON Errors**: Handler `404`, `405`, `500`, dan `AppError` di `backend/core/errors.py` mengembalikan HTML untuk halaman web dan JSON untuk `/api/*` tanpa membocorkan stack trace.
 - **Security Headers Default**: `Content-Security-Policy` (`'self'`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, dan `Permissions-Policy`.
 - **Automated Tests**: Smoke test dan auth security test di `tests/test_app.py` dan `tests/test_auth.py` menggunakan `unittest` bawaan Python.
 
@@ -28,25 +31,33 @@ WebFlask/
 ├── requirements.txt
 ├── backend/
 │   ├── __init__.py
-│   ├── db.py
-│   ├── exceptions.py
-│   ├── http.py
-│   ├── schema.sql
-│   ├── security.py
-│   ├── controllers/
+│   ├── core/
 │   │   ├── __init__.py
-│   │   ├── api_controller.py
-│   │   ├── auth_controller.py
-│   │   ├── error_controller.py
-│   │   └── web_controller.py
+│   │   ├── errors.py
+│   │   ├── exceptions.py
+│   │   ├── http.py
+│   │   └── security.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── db.py
+│   │   └── schema.sql
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py
 │   ├── repositories/
 │   │   ├── __init__.py
 │   │   ├── base.py
 │   │   ├── session_repository.py
 │   │   └── user_repository.py
-│   └── services/
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── auth_service.py
+│   └── controllers/
 │       ├── __init__.py
-│       └── auth_service.py
+│       ├── api_controller.py
+│       ├── auth_controller.py
+│       ├── authorize.py
+│       └── web_controller.py
 ├── frontend/
 │   ├── static/
 │   │   └── css/

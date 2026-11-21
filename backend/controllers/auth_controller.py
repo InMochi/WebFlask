@@ -3,8 +3,9 @@
 import secrets
 from flask import Blueprint, Response, current_app, g, jsonify, session
 
-from backend.http import parse_json_object
-from backend.security import get_or_create_csrf_token, login_required
+from backend.controllers.authorize import authorize
+from backend.core.http import parse_json_object
+from backend.core.security import get_or_create_csrf_token
 from backend.services import auth_service
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -30,7 +31,7 @@ def register() -> tuple[Response, int]:
     """Handle user registration requests."""
     payload = parse_json_object()
     user = auth_service.register_user(payload.get("email"), payload.get("password"))
-    return jsonify({"user": user}), 201
+    return jsonify({"user": user.to_dict()}), 201
 
 
 @bp.route("/login", methods=["POST"])
@@ -39,24 +40,24 @@ def login() -> tuple[Response, int]:
     payload = parse_json_object(error_message="Invalid credentials", status_code=401)
     user = auth_service.authenticate_user(payload.get("email"), payload.get("password"))
     session_id = auth_service.create_user_session(
-        user_id=user["id"],
+        user_id=user.id,
         lifetime=current_app.config["PERMANENT_SESSION_LIFETIME"],
     )
     _bind_session_cookie(session_id)
-    return jsonify({"user": user}), 200
+    return jsonify({"user": user.to_dict()}), 200
 
 
 @bp.route("/logout", methods=["POST"])
-@login_required
+@authorize
 def logout() -> tuple[Response, int]:
     """Handle user logout and invalidate active sessions."""
-    auth_service.revoke_user_sessions(g.current_user["id"])
+    auth_service.revoke_user_sessions(g.current_user.id)
     session.clear()
     return jsonify({"message": "Logged out"}), 200
 
 
 @bp.route("/me", methods=["GET"])
-@login_required
+@authorize
 def current_profile() -> tuple[Response, int]:
     """Return the authenticated user's profile."""
-    return jsonify({"user": g.current_user}), 200
+    return jsonify({"user": g.current_user.to_dict()}), 200

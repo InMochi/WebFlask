@@ -4,8 +4,8 @@ import logging
 import sqlite3
 from typing import Any
 
-from backend.db import get_db
-from backend.exceptions import DatabaseError, DuplicateRecordError
+from backend.core.exceptions import DatabaseError, DuplicateRecordError
+from backend.data.db import get_db
 
 
 def fetch_one(query: str, params: tuple[Any, ...] = ()) -> dict[str, Any] | None:

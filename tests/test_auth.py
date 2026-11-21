@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from backend import create_app
-from backend.security import rate_limiter
+from backend.core.security import rate_limiter
 
 HTTPS_BASE = "https://127.0.0.1"
 

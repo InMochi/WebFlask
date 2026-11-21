@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 from backend import create_app
-from backend.security import rate_limiter
+from backend.core.security import rate_limiter
 from config import DevelopmentConfig, ProductionConfig
 
 

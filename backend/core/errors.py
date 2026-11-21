@@ -1,8 +1,8 @@
-"""HTTP error and domain exception controller for web views and JSON APIs."""
+"""Global HTTP error and domain exception handlers for web views and JSON APIs."""
 
 from flask import Flask, Response, jsonify, render_template, request
 
-from backend.exceptions import AppError
+from backend.core.exceptions import AppError
 
 
 def _is_api_request() -> bool:

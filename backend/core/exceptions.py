@@ -2,7 +2,7 @@
 
 
 class AppError(Exception):
-    """Base application error automatically serialized by error_controller."""
+    """Base application error automatically serialized by error handlers."""
 
     status_code = 500
 

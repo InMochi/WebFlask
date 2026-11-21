@@ -64,25 +64,33 @@
 ├── requirements.txt
 ├── backend/
 │   ├── __init__.py
-│   ├── db.py
-│   ├── exceptions.py
-│   ├── http.py
-│   ├── schema.sql
-│   ├── security.py
-│   ├── controllers/
+│   ├── core/
 │   │   ├── __init__.py
-│   │   ├── api_controller.py
-│   │   ├── auth_controller.py
-│   │   ├── error_controller.py
-│   │   └── web_controller.py
+│   │   ├── errors.py
+│   │   ├── exceptions.py
+│   │   ├── http.py
+│   │   └── security.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── db.py
+│   │   └── schema.sql
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py
 │   ├── repositories/
 │   │   ├── __init__.py
 │   │   ├── base.py
 │   │   ├── session_repository.py
 │   │   └── user_repository.py
-│   └── services/
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── auth_service.py
+│   └── controllers/
 │       ├── __init__.py
-│       └── auth_service.py
+│       ├── api_controller.py
+│       ├── auth_controller.py
+│       ├── authorize.py
+│       └── web_controller.py
 ├── frontend/
 │   ├── static/
 │   │   └── css/

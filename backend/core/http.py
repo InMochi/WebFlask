@@ -3,7 +3,7 @@
 from typing import Any
 from flask import request
 
-from backend.exceptions import AppError
+from backend.core.exceptions import AppError
 
 
 def parse_json_object(
