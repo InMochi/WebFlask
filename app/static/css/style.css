@@ -1,0 +1,234 @@
+:root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface-alt: #f1f5f9;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --border: #e2e8f0;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --radius: 10px;
+    --max-width: 1040px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.site-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.site-nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.site-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.site-nav a:hover {
+    color: var(--primary);
+}
+
+.hero {
+    padding: 5rem 0 4.5rem;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.hero-content {
+    max-width: 680px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    background-color: #dbeafe;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+}
+
+.hero-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.7rem 1.35rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--text-muted);
+}
+
+.section {
+    padding: 4rem 0;
+}
+
+.section-alt {
+    background-color: var(--surface-alt);
+    border-top: 1px solid var(--border);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.75rem;
+    letter-spacing: -0.02em;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+}
+
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+.card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background-color: var(--surface-alt);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+}
+
+.tree-box {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.tree-box code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+.site-footer {
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 3.5rem 0 3rem;
+    }
+
+    .site-nav {
+        gap: 1rem;
+    }
+}

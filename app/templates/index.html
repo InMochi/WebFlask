@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - WebFlask{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-content">
+        <span class="badge">Flask 3 Starter</span>
+        <h1>Selamat datang di WebFlask</h1>
+        <p class="hero-lead">
+            Homepage sederhana dengan struktur proyek Flask yang rapi:
+            Application Factory, Blueprint, Jinja2 template inheritance,
+            serta stylesheet dan header keamanan terpisah.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="#fitur">Lihat Fitur</a>
+            <a class="btn btn-secondary" href="#struktur">Struktur Proyek</a>
+        </div>
+    </div>
+</section>
+
+<section id="fitur" class="section">
+    <div class="container">
+        <h2 class="section-title">Fondasi Utama</h2>
+        <div class="card-grid">
+            <article class="card">
+                <h3>Struktur Modular</h3>
+                <p>
+                    Logika aplikasi dipisah ke dalam paket <code>app/</code>
+                    menggunakan pola <code>create_app()</code> dan Blueprint
+                    agar mudah dikembangkan.
+                </p>
+            </article>
+            <article class="card">
+                <h3>Template Terstruktur</h3>
+                <p>
+                    HTML dikelola melalui <code>base.html</code> dan
+                    <code>index.html</code> dengan auto-escaping bawaan Jinja2
+                    tanpa HTML inline di Python.
+                </p>
+            </article>
+            <article class="card">
+                <h3>Keamanan Default</h3>
+                <p>
+                    Aset statis disajikan lokal tanpa inline script/style,
+                    dilengkapi header <code>CSP</code>,
+                    <code>X-Frame-Options</code>, dan
+                    <code>X-Content-Type-Options</code>.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section id="struktur" class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">Struktur Direktori</h2>
+        <pre class="tree-box"><code>WebFlask/
+├── app.py
+├── requirements.txt
+└── app/
+    ├── __init__.py
+    ├── routes.py
+    ├── static/
+    │   └── css/
+    │       └── style.css
+    └── templates/
+        ├── base.html
+        └── index.html</code></pre>
+    </div>
+</section>
+{% endblock %}
