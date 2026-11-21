@@ -1,16 +1,20 @@
 # WebFlask
 
-Starter template aplikasi web berbasis **Flask 3** dengan pemisahan struktur **Backend** (`backend/`) dan **Frontend** (`frontend/`) dalam satu server Flask, lengkap dengan konfigurasi environment, custom error handler (HTML & JSON), automated smoke test, dan baseline security headers.
+Starter template aplikasi web berbasis **Flask 3** dengan pemisahan struktur **Backend** (`backend/`) dan **Frontend** (`frontend/`) dalam satu server Flask, lengkap dengan SQLite authentication API, konfigurasi environment, custom error handler (HTML & JSON), automated smoke/auth test, dan baseline security headers.
 
 ## Fitur Utama
 
-- **Pemisahan Backend & Frontend**: Kode Python, Blueprint web/API, dan error handler berada di `backend/`; template Jinja2 dan aset statis berada di `frontend/`.
-- **Application Factory & Blueprint**: Terpusat di `backend/__init__.py` dengan rute terpisah di `backend/routes/web.py` (UI) dan `backend/routes/api.py` (JSON `/api/*`).
+- **Arsitektur Layered MVC (Controller -> Service -> Repository + Frontend Views)**:
+  - **Controllers (`backend/controllers/`)**: Auto-discovered `*_controller.py` yang mengekspor `bp = Blueprint(...)`, berisi handler HTTP tipis tanpa `try/except` berulang.
+  - **Services (`backend/services/`)**: Menampung business logic, validasi domain, hashing `scrypt`, dan raise `AppError` (`backend/exceptions.py`).
+  - **Repositories (`backend/repositories/`)**: Khusus query SQLite dengan helper bersama di `base.py`.
+  - **Views (`frontend/`)**: Template Jinja2 (`frontend/templates/`) dan aset statis (`frontend/static/`).
+- **Application Factory**: Terpusat di `backend/__init__.py` dengan registrasi blueprint, error handler, dan security middleware.
+- **SQLite Auth & Session Hardening**: Penyimpanan user (`scrypt` password hashing via Werkzeug) dan server-side session table di `instance/app.db`, cookie `__Host-session` (`HttpOnly`, `Secure`, `SameSite=Lax`, expiry 30 menit), proteksi CSRF (`X-CSRF-Token`), serta in-memory rate limiting.
 - **Konfigurasi Environment**: Kelas `DevelopmentConfig`, `TestingConfig`, dan `ProductionConfig` di `config.py`.
-- **Template Inheritance**: Layout terpusat di `frontend/templates/base.html` dengan auto-escaping bawaan Jinja2.
-- **Custom Error Pages & JSON Errors**: Handler `404`, `405`, dan `500` di `backend/errors.py` mengembalikan HTML untuk halaman web dan JSON untuk `/api/*` tanpa membocorkan stack trace.
+- **Custom Error Pages & JSON Errors**: Handler `404`, `405`, dan `500` di `backend/controllers/error_controller.py` mengembalikan HTML untuk halaman web dan JSON untuk `/api/*` tanpa membocorkan stack trace.
 - **Security Headers Default**: `Content-Security-Policy` (`'self'`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, dan `Permissions-Policy`.
-- **Automated Tests**: Smoke test dan verifikasi header keamanan di `tests/test_app.py` menggunakan `unittest` bawaan Python.
+- **Automated Tests**: Smoke test dan auth security test di `tests/test_app.py` dan `tests/test_auth.py` menggunakan `unittest` bawaan Python.
 
 ## Struktur Proyek
 
@@ -24,11 +28,25 @@ WebFlask/
 ├── requirements.txt
 ├── backend/
 │   ├── __init__.py
-│   ├── errors.py
-│   └── routes/
+│   ├── db.py
+│   ├── exceptions.py
+│   ├── http.py
+│   ├── schema.sql
+│   ├── security.py
+│   ├── controllers/
+│   │   ├── __init__.py
+│   │   ├── api_controller.py
+│   │   ├── auth_controller.py
+│   │   ├── error_controller.py
+│   │   └── web_controller.py
+│   ├── repositories/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── session_repository.py
+│   │   └── user_repository.py
+│   └── services/
 │       ├── __init__.py
-│       ├── api.py
-│       └── web.py
+│       └── auth_service.py
 ├── frontend/
 │   ├── static/
 │   │   └── css/
@@ -40,7 +58,8 @@ WebFlask/
 │           ├── 404.html
 │           └── 500.html
 └── tests/
-    └── test_app.py
+    ├── test_app.py
+    └── test_auth.py
 ```
 
 ## Prasyarat
@@ -69,10 +88,17 @@ $env:FLASK_ENV="development"
 .\venv\Scripts\python.exe app.py
 ```
 
-Aplikasi berjalan di `http://127.0.0.1:5000`:
+Tabel SQLite di `instance/app.db` otomatis dibuat saat aplikasi pertama kali dijalankan (bisa juga diinisialisasi manual lewat `flask --app app init-db`).
 
-- Web homepage: `GET http://127.0.0.1:5000/`
-- API health check: `GET http://127.0.0.1:5000/api/health`
+Endpoint yang tersedia di `http://127.0.0.1:5000`:
+
+- Web homepage: `GET /`
+- API health check: `GET /api/health`
+- Ambil CSRF token: `GET /api/auth/csrf`
+- Register user: `POST /api/auth/register` (header `X-CSRF-Token`, JSON `{"email", "password"}`)
+- Login: `POST /api/auth/login` (header `X-CSRF-Token`, JSON `{"email", "password"}`)
+- Profile aktif: `GET /api/auth/me`
+- Logout: `POST /api/auth/logout` (header `X-CSRF-Token`)
 
 ## Menjalankan Test
 
@@ -83,5 +109,7 @@ Aplikasi berjalan di `http://127.0.0.1:5000`:
 ## Catatan Keamanan & Production
 
 - Development server (`app.run()`) dikonfigurasi hanya untuk `127.0.0.1` dan tidak boleh dipakai di production.
-- Untuk deployment production, jalankan objek `app` dari `app.py` menggunakan WSGI server seperti **Waitress** (Windows) atau **Gunicorn** (Linux), serta set `FLASK_ENV=production`.
-- Jika nanti menambahkan form, sesi pengguna, atau autentikasi/endpoint API privat, pastikan menambahkan `SECRET_KEY` via environment variable/secret manager, proteksi CSRF, autentikasi, validasi input, dan rate limiting.
+- Di mode `production`, environment variable `SECRET_KEY` **wajib** diset (aplikasi akan error jika kosong).
+- Cookie sesi memakai prefix `__Host-` dan flag `Secure`; di production wajib berjalan di belakang HTTPS/TLS.
+- Rate limiter bawaan memakai memori proses tunggal; untuk deployment multi-worker gunakan backend bersama (misalnya Redis dengan `Flask-Limiter`).
+- Untuk deployment production, jalankan objek `app` dari `app.py` menggunakan WSGI server seperti **Waitress** (Windows) atau **Gunicorn** (Linux).

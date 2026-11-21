@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 from flask import Flask, Response, request
 
-from config import Config, get_config
+from config import Config, ProductionConfig, get_config, resolve_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -42,21 +42,28 @@ def create_app(config_object: type[Config] | dict[str, Any] | None = None) -> Fl
     if isinstance(config_object, dict):
         app.config.from_object(Config)
         app.config.from_mapping(config_object)
+        require_env_secret = False
     elif config_object is not None:
         app.config.from_object(config_object)
+        require_env_secret = config_object is ProductionConfig
     else:
-        app.config.from_object(get_config())
+        resolved = get_config()
+        app.config.from_object(resolved)
+        require_env_secret = resolved is ProductionConfig
 
-    # TODO(security): Add SECRET_KEY (via env/secret manager), session cookie
-    # hardening (__Host-, HttpOnly, Secure, SameSite), CSRF protection,
-    # authentication, and rate limiting before introducing forms, APIs, or
-    # user accounts. Omitted here because only public read-only routes are served.
+    if not app.config.get("SECRET_KEY"):
+        app.config["SECRET_KEY"] = resolve_secret_key(require_env=require_env_secret)
 
-    from backend.errors import register_error_handlers
-    from backend.routes import register_blueprints
+    from backend.controllers import register_blueprints
+    from backend.controllers.error_controller import register_error_handlers
+    from backend.db import register_db
+    from backend.security import enforce_api_rate_limit, enforce_csrf
 
+    register_db(app)
     register_blueprints(app)
     register_error_handlers(app)
+    app.before_request(enforce_api_rate_limit)
+    app.before_request(enforce_csrf)
     app.after_request(add_security_headers)
 
     return app

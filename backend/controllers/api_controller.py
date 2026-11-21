@@ -1,11 +1,11 @@
-"""JSON API Blueprint."""
+"""General JSON API controller."""
 
 from flask import Blueprint, Response, current_app, jsonify
 
-api_bp = Blueprint("api", __name__, url_prefix="/api")
+bp = Blueprint("api", __name__, url_prefix="/api")
 
 
-@api_bp.route("/health", methods=["GET"])
+@bp.route("/health", methods=["GET"])
 def health_check() -> tuple[Response, int]:
     """Public liveness endpoint for monitoring and smoke checks."""
     # TODO(security): /api/health is an intentionally public, read-only liveness

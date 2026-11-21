@@ -64,11 +64,25 @@
 ├── requirements.txt
 ├── backend/
 │   ├── __init__.py
-│   ├── errors.py
-│   └── routes/
+│   ├── db.py
+│   ├── exceptions.py
+│   ├── http.py
+│   ├── schema.sql
+│   ├── security.py
+│   ├── controllers/
+│   │   ├── __init__.py
+│   │   ├── api_controller.py
+│   │   ├── auth_controller.py
+│   │   ├── error_controller.py
+│   │   └── web_controller.py
+│   ├── repositories/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── session_repository.py
+│   │   └── user_repository.py
+│   └── services/
 │       ├── __init__.py
-│       ├── api.py
-│       └── web.py
+│       └── auth_service.py
 ├── frontend/
 │   ├── static/
 │   │   └── css/
@@ -80,7 +94,8 @@
 │           ├── 404.html
 │           └── 500.html
 └── tests/
-    └── test_app.py</code></pre>
+    ├── test_app.py
+    └── test_auth.py</code></pre>
     </div>
 </section>
 {% endblock %}
